@@ -3,6 +3,7 @@ package com.animalreview.api.controller;
 import com.animalreview.api.dto.AnimalDto;
 import com.animalreview.api.entity.Animal;
 import com.animalreview.api.entity.Review;
+import com.animalreview.api.entity.User;
 import com.animalreview.api.servies.ReviewService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.animalreview.api.dto.ReviewDto;
@@ -34,6 +35,7 @@ public class ReviewControllerTests {
     private ReviewService reviewService;
     @Autowired
     private ObjectMapper objectMapper;
+    private User user;
     private Animal animal;
     private Review review;
     private ReviewDto reviewDto;
@@ -41,6 +43,7 @@ public class ReviewControllerTests {
 
     @BeforeEach
     public void init(){
+        user = User.builder().username("username").password("password").build();
         animal = Animal.builder().name("mery").type("dog").build();
         animalDto = AnimalDto.builder().name("mery").type("dog").build();
         review = Review.builder()
@@ -67,9 +70,10 @@ public class ReviewControllerTests {
     public void ReviewController_UpdateReview_ReturnReviewDto() throws Exception {
         int animalId = 1;
         int reviewId = 1;
-        when(reviewService.updateReview(animalId, reviewId, reviewDto)).thenReturn(reviewDto);
+        int userId = 1;
+        when(reviewService.updateReview(userId,animalId, reviewId, reviewDto)).thenReturn(reviewDto);
 
-        ResultActions response = mockMvc.perform(put("/api/animal/1/reviews/1")
+        ResultActions response = mockMvc.perform(put("/api/users/1/animal/1/reviews/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(reviewDto)));
 
@@ -83,9 +87,10 @@ public class ReviewControllerTests {
     @Test
     public void ReviewController_CreateReview_ReturnReviewDto() throws Exception {
         int animalId = 1;
-        when(reviewService.createReview(animalId, reviewDto)).thenReturn(reviewDto);
+        int userId = 1;
+        when(reviewService.createReview(userId,animalId, reviewDto)).thenReturn(reviewDto);
 
-        ResultActions response = mockMvc.perform(post("/api/animal/1/reviews")
+        ResultActions response = mockMvc.perform(post("/api/users/1/animal/1/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(reviewDto)));
 
@@ -114,10 +119,11 @@ public class ReviewControllerTests {
     public void ReviewController_DeleteReview_ReturnOk() throws Exception {
         int animalId = 1;
         int reviewId = 1;
+        int userId = 1 ;
 
-        doNothing().when(reviewService).deleteReview(animalId, reviewId);
+        doNothing().when(reviewService).deleteReview(userId,animalId, reviewId);
 
-        ResultActions response = mockMvc.perform(delete("/api/animal/1/reviews/1")
+        ResultActions response = mockMvc.perform(delete("/api/users/1/animal/1/reviews/1")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk());
